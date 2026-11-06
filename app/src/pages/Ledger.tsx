@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PromiseRow } from "../PromiseRow";
-import { errorText, fetchPromises, fetchTeams, getProgram, PromiseData, TeamData } from "../chain";
+import { errorText, NETWORK, fetchPromises, fetchTeams, getProgram, PromiseData, TeamData } from "../chain";
 
 export function Ledger() {
   const { connection } = useConnection();
@@ -21,17 +21,19 @@ export function Ledger() {
 
   return (
     <>
-      <h1>The promise ledger</h1>
-      <p className="lede">Every promise on Shipstake, with the stake behind it. Open one to back it or read its proof.</p>
+      <section className="ledger">
+      <h2 className="section-title">The real ledger</h2>
+      <p className="lede">Live from Solana {NETWORK}. Every promise here has real test SOL locked behind it.</p>
       <div className="panel">
         <div className="ph mono"><span>Promises</span><span>{rows ? rows.length : ""}</span></div>
         {error && <p className="empty error">Couldn't load promises: {error}</p>}
         {!error && !rows && <p className="empty">Loading promises…</p>}
         {rows?.length === 0 && (
-          <p className="empty">No promises yet. <a href="#/new">Make the first one.</a></p>
+          <div className="first"><h3>Nothing here yet.</h3><p>The first promise on this ledger stays on it for good.</p><a className="btn dark" href="#/new">Make the first promise →</a></div>
         )}
         {rows?.map((p) => <PromiseRow key={p.address.toBase58()} promise={p} teamName={teams.get(p.team.toBase58())?.name} />)}
       </div>
+      </section>
     </>
   );
 }

@@ -2,7 +2,7 @@
   "name": "shipstake",
   "private": true,
   "scripts": {
-    "test": "node --import tsx --test tests/shipstake.test.ts",
+    "test": "node --import tsx --test tests/shipstake.test.ts tests/simulation.test.ts",
     "flow": "tsx scripts/flow.ts",
     "check:devnet": "tsx scripts/devnet-check.ts",
     "deploy:devnet": "bash scripts/deploy-devnet.sh"
