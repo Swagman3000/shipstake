@@ -11,5 +11,4 @@ test-ledger
 .env.local
 dist
 .npm-cache
-data
 .claude

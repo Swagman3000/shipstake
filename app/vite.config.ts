@@ -5,5 +5,4 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 export default defineConfig({
   plugins: [react(), nodePolyfills({ include: ["buffer"], globals: { Buffer: true } })],
   build: { rollupOptions: { input: ["index.html", "app.html"] } },
-  server: { proxy: { "/api": "http://localhost:8787" } },
 });

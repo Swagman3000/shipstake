@@ -24,7 +24,6 @@ Limits: minimum stake 0.01 SOL, minimum backing 0.001 SOL, deadline 24 hours to 
 - `tests` — program tests on LiteSVM
 - `scripts/flow.ts` — every path against a live node with real timers
 - `app` — landing page (`index.html`) and app (`app.html`)
-- `server/waitlist.mjs` — saves waitlist emails to `data/waitlist.csv`
 
 ## Run it
 
@@ -41,7 +40,6 @@ Local version, with a burner wallet and 2-minute timers:
 anchor build -- --features devnet-fast
 cp target/deploy/shipstake.so target/deploy/shipstake-fast.so
 solana-test-validator --reset --bpf-program "$(solana-keygen pubkey target/deploy/shipstake-keypair.json)" target/deploy/shipstake-fast.so
-node server/waitlist.mjs
 cd app && npx vite --mode localnet
 ```
 
