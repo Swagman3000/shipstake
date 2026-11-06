@@ -1,0 +1,769 @@
+{
+  "address": "sBuf5eTY8MpC6DwErLYSYu9uwGLhwnU2kMRBeinN4KN",
+  "metadata": {
+    "name": "shipstake",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Lock SOL behind a public promise to ship"
+  },
+  "instructions": [
+    {
+      "name": "back",
+      "docs": [
+        "Deposits refundable SOL behind a promise. Open until halfway to the deadline."
+      ],
+      "discriminator": [
+        1,
+        144,
+        109,
+        177,
+        110,
+        131,
+        124,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "backer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "promise",
+          "writable": true
+        },
+        {
+          "name": "backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "promise"
+              },
+              {
+                "kind": "account",
+                "path": "backer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "challenge",
+      "docs": [
+        "Any backer can dispute the proof during the challenge window."
+      ],
+      "discriminator": [
+        16,
+        107,
+        14,
+        39,
+        244,
+        150,
+        81,
+        187
+      ],
+      "accounts": [
+        {
+          "name": "backer",
+          "signer": true,
+          "relations": [
+            "backing"
+          ]
+        },
+        {
+          "name": "promise",
+          "writable": true,
+          "relations": [
+            "backing"
+          ]
+        },
+        {
+          "name": "backing",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "promise"
+              },
+              {
+                "kind": "account",
+                "path": "backer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_backing",
+      "docs": [
+        "Returns a backer's deposit after settlement, plus their pro-rata share",
+        "of the stake if the team missed. Closing the account blocks a second claim."
+      ],
+      "discriminator": [
+        97,
+        61,
+        218,
+        192,
+        23,
+        119,
+        148,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "backer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "backing"
+          ]
+        },
+        {
+          "name": "promise",
+          "writable": true,
+          "relations": [
+            "backing"
+          ]
+        },
+        {
+          "name": "backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "promise"
+              },
+              {
+                "kind": "account",
+                "path": "backer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_promise",
+      "docs": [
+        "Publishes a promise and locks the team's stake inside the promise account."
+      ],
+      "discriminator": [
+        233,
+        170,
+        35,
+        24,
+        34,
+        120,
+        82,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "team",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "team"
+              }
+            ]
+          }
+        },
+        {
+          "name": "promise",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  109,
+                  105,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "team"
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": "u64"
+        },
+        {
+          "name": "team_name",
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "criteria",
+          "type": "string"
+        },
+        {
+          "name": "stake",
+          "type": "u64"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "reviewer",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "finalize",
+      "docs": [
+        "Anyone can settle a promise once its timer has run out:",
+        "no proof by the deadline is a miss, an unchallenged proof is a delivery,",
+        "and a reviewer who never rules counts against the team that named them."
+      ],
+      "discriminator": [
+        171,
+        61,
+        218,
+        56,
+        127,
+        115,
+        12,
+        217
+      ],
+      "accounts": [
+        {
+          "name": "promise",
+          "writable": true
+        },
+        {
+          "name": "profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "promise.team",
+                "account": "PromiseAccount"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "post_proof",
+      "docs": [
+        "The team posts proof of delivery, which opens the challenge window."
+      ],
+      "discriminator": [
+        112,
+        117,
+        74,
+        221,
+        176,
+        119,
+        95,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "team",
+          "signer": true,
+          "relations": [
+            "promise"
+          ]
+        },
+        {
+          "name": "promise",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "proof_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "rule",
+      "docs": [
+        "The named reviewer settles a challenged promise."
+      ],
+      "discriminator": [
+        66,
+        78,
+        245,
+        75,
+        110,
+        83,
+        136,
+        172
+      ],
+      "accounts": [
+        {
+          "name": "reviewer",
+          "signer": true,
+          "relations": [
+            "promise"
+          ]
+        },
+        {
+          "name": "promise",
+          "writable": true
+        },
+        {
+          "name": "profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "promise.team",
+                "account": "PromiseAccount"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "shipped",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_stake",
+      "docs": [
+        "Returns the stake to the team after a delivery. A missed promise with",
+        "no backers also refunds, because nobody is owed the money."
+      ],
+      "discriminator": [
+        153,
+        8,
+        22,
+        138,
+        105,
+        176,
+        87,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "team",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "promise"
+          ]
+        },
+        {
+          "name": "promise",
+          "writable": true
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Backing",
+      "discriminator": [
+        183,
+        154,
+        102,
+        51,
+        83,
+        11,
+        152,
+        65
+      ]
+    },
+    {
+      "name": "PromiseAccount",
+      "discriminator": [
+        27,
+        95,
+        98,
+        230,
+        189,
+        135,
+        138,
+        206
+      ]
+    },
+    {
+      "name": "TeamProfile",
+      "discriminator": [
+        77,
+        170,
+        207,
+        206,
+        63,
+        142,
+        104,
+        25
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "EmptyText",
+      "msg": "Text fields can't be empty"
+    },
+    {
+      "code": 6001,
+      "name": "StakeTooSmall",
+      "msg": "The stake is below the minimum of 0.01 SOL"
+    },
+    {
+      "code": 6002,
+      "name": "DeadlineTooSoon",
+      "msg": "The deadline is too soon"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlineTooFar",
+      "msg": "The deadline is more than a year away"
+    },
+    {
+      "code": 6004,
+      "name": "TeamCannotReview",
+      "msg": "A team can't review its own promise"
+    },
+    {
+      "code": 6005,
+      "name": "WrongPromiseId",
+      "msg": "Promise id doesn't match this team's next id"
+    },
+    {
+      "code": 6006,
+      "name": "WrongStatus",
+      "msg": "This action isn't allowed at the promise's current stage"
+    },
+    {
+      "code": 6007,
+      "name": "BackingClosed",
+      "msg": "Backing closed halfway to the deadline"
+    },
+    {
+      "code": 6008,
+      "name": "BackingTooSmall",
+      "msg": "The backing is below the minimum of 0.001 SOL"
+    },
+    {
+      "code": 6009,
+      "name": "TeamCannotBack",
+      "msg": "A team can't back its own promise"
+    },
+    {
+      "code": 6010,
+      "name": "ReviewerCannotBack",
+      "msg": "The reviewer can't back a promise they review"
+    },
+    {
+      "code": 6011,
+      "name": "DeadlinePassed",
+      "msg": "The deadline has passed"
+    },
+    {
+      "code": 6012,
+      "name": "ChallengeClosed",
+      "msg": "The challenge window has closed"
+    },
+    {
+      "code": 6013,
+      "name": "ReviewClosed",
+      "msg": "The review window has closed"
+    },
+    {
+      "code": 6014,
+      "name": "TooEarly",
+      "msg": "This promise can't be settled yet"
+    },
+    {
+      "code": 6015,
+      "name": "AlreadyWithdrawn",
+      "msg": "The stake has already been withdrawn"
+    },
+    {
+      "code": 6016,
+      "name": "Overflow",
+      "msg": "Number overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "Backing",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "promise",
+            "type": "pubkey"
+          },
+          {
+            "name": "backer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PromiseAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "team",
+            "type": "pubkey"
+          },
+          {
+            "name": "reviewer",
+            "type": "pubkey"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "criteria",
+            "type": "string"
+          },
+          {
+            "name": "proof_uri",
+            "type": "string"
+          },
+          {
+            "name": "stake",
+            "type": "u64"
+          },
+          {
+            "name": "total_backed",
+            "type": "u64"
+          },
+          {
+            "name": "backer_count",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "backing_closes_at",
+            "type": "i64"
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          },
+          {
+            "name": "proof_at",
+            "type": "i64"
+          },
+          {
+            "name": "challenge_ends_at",
+            "type": "i64"
+          },
+          {
+            "name": "review_ends_at",
+            "type": "i64"
+          },
+          {
+            "name": "challenger",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          },
+          {
+            "name": "stake_withdrawn",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Status",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "ProofPosted"
+          },
+          {
+            "name": "Challenged"
+          },
+          {
+            "name": "Shipped"
+          },
+          {
+            "name": "Missed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TeamProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "team",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "promise_count",
+            "type": "u64"
+          },
+          {
+            "name": "shipped_count",
+            "type": "u64"
+          },
+          {
+            "name": "missed_count",
+            "type": "u64"
+          },
+          {
+            "name": "total_staked",
+            "type": "u64"
+          },
+          {
+            "name": "total_lost",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

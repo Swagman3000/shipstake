@@ -1,0 +1,19 @@
+skip_local_validator = true
+
+[toolchain]
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+shipstake = "sBuf5eTY8MpC6DwErLYSYu9uwGLhwnU2kMRBeinN4KN"
+
+[provider]
+cluster = "localnet"
+wallet = ".keys/devnet-deployer.json"
+
+[scripts]
+test = "cargo test"
+
+[hooks]
