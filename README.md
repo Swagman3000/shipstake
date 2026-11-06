@@ -65,4 +65,6 @@ Send about 2.5 devnet SOL to the wallet in `.keys/devnet-deployer.json`, then:
 npm run deploy:devnet
 ```
 
+After deploying, run `npm run check:devnet` to confirm the program works with real timers. It only simulates, so it writes nothing on-chain.
+
 `.keys` and `target/deploy/shipstake-keypair.json` control the program's upgrades and aren't in git. Back them up. `.keys/shipstake-program-keypair.json` is a copy of the program key.
