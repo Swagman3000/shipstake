@@ -37,6 +37,7 @@ export function App() {
           <a href="#/ledger">Ledger</a>
           <a href="#/new">Make a promise</a>
           <a href="#/verify">Verify</a>
+          <a href="https://github.com/Swagman3000/shipstake" target="_blank" rel="noreferrer noopener">GitHub</a>
         </nav>
         <WalletMultiButton />
       </header>
